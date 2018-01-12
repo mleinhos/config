@@ -1,0 +1,13 @@
+[user]
+	email = matt@starlab.io
+	name = Matt Leinhos
+
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	askpass = /home/matt/bin/get_github_token
+
+[alias]
+        #me = merge --no-commit
