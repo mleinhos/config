@@ -1,0 +1,11 @@
+#!/bin/sh
+
+##
+## Helpful changes to OVPN config file
+##
+## auth-user-pass
+## up   /etc/openvpn/update-resolv-conf
+## down /etc/openvpn/update-resolv-conf
+##
+
+sudo openvpn --script-security 2 --config einstein-udp-9997-matt.leinhos.ovpn
