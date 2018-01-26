@@ -1,0 +1,11 @@
+#!/bin/bash
+
+##
+## http://note.yuhc.me/2017/09/install-xen-on-ubuntu-uefi/
+##
+
+set $_name = xen-4.6
+set $_path = "\EFI\xen-4.6\xen-4.6-amd64.efi"
+
+
+efibootmgr -c -d /dev/nvme0n1 -p 1 -w -L $_name -l $_path
