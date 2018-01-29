@@ -60,10 +60,13 @@ fi
 _screentitle="$USER@$HOSTNAME"
 function set_title() {
    if [ -n "$WINDOW" ] ; then         # We are in a screen session
+      # Set the screen window name; 
+      # WINDOW envvar should be forwarded by ssh and sudo
       #printf '\ek%s\e\\' "$_screentitle"
       #screen -X eval "title $_screentitle"
       #screen -X eval "shelltitle $_screentitle"
-      printf "\033]0;%s\007" "$_screentitle"
+      #printf "\033]0;%s\007" "$_screentitle"
+      printf "\033k%s\033\\" "$_screentitle"
   fi
   # Set the terminal title unconditionally
   printf "\033]0;%s\007" "$_screentitle"
