@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -x
+
+_iface=br0
+
+sudo ifdown $_iface
+sudo ifup   $_iface

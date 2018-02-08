@@ -1,0 +1,14 @@
+#!/bin/bash
+
+##
+## Assists with AWS IP filtering by routing EC2 traffic through VPN
+## gateway.
+##
+
+set -x
+
+#_gw=10.0.19.89
+_gw=$( route | grep tun0 | head -1 | awk '{ print $2 }' )
+_ec2=ec2-34-229-230-2.compute-1.amazonaws.com
+
+sudo route add -host $_ec2 gw $gw
