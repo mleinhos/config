@@ -56,16 +56,19 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+#_screentitle="$USER@$HOSTNAME"
+#_screentitle="${USER:0:2}@${HOSTNAME:0:9}"
+_screentitle="$(printf "%.4s" $USER)@$(printf "%.9s" $HOSTNAME)"
 # terminal title with screen support
-_screentitle="$USER@$HOSTNAME"
 function set_title() {
+   # Set the screen window name; 
+   # WINDOW envvar should be forwarded by ssh and sudo
+
+   #printf "Setting title to %s\n" $_screentitle
    if [ -n "$WINDOW" ] ; then         # We are in a screen session
-      # Set the screen window name; 
-      # WINDOW envvar should be forwarded by ssh and sudo
       #printf '\ek%s\e\\' "$_screentitle"
       #screen -X eval "title $_screentitle"
       #screen -X eval "shelltitle $_screentitle"
-      #printf "\033]0;%s\007" "$_screentitle"
       printf "\033k%s\033\\" "$_screentitle"
   fi
   # Set the terminal title unconditionally
@@ -74,6 +77,7 @@ function set_title() {
 
 #echo -e '\033k'$_screentitle'\033\\'
 PROMPT_COMMAND='set_title && export PS1X=$(perl -pl0 -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
+#PROMPT_COMMAND='export PS1X=$(perl -pl0 -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
 
 if [ "$color_prompt" = yes ]; then
     #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
