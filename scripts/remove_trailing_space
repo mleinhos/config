@@ -1,0 +1,13 @@
+#!/bin/bash
+
+##
+## Removes trailing whitespace from specified files. Doesn't touch
+## files without the whitespace.
+##
+
+#set -x
+
+for f in $( grep -l '\s$' $* )
+do
+     sed -i.bak -e 's/[[:blank:]]\+$//g' $f
+done
