@@ -61,18 +61,21 @@ fi
 _screentitle="$(printf "%.4s" $USER)@$(printf "%.9s" $HOSTNAME)"
 # terminal title with screen support
 function set_title() {
-   # Set the screen window name; 
-   # WINDOW envvar should be forwarded by ssh and sudo
+    # Set the screen window name; 
+    # WINDOW envvar should be forwarded by ssh and sudo
 
-   #printf "Setting title to %s\n" $_screentitle
-   if [ -n "$WINDOW" ] ; then         # We are in a screen session
-      #printf '\ek%s\e\\' "$_screentitle"
-      #screen -X eval "title $_screentitle"
-      #screen -X eval "shelltitle $_screentitle"
-      printf "\033k%s\033\\" "$_screentitle"
-  fi
-  # Set the terminal title unconditionally
-  printf "\033]0;%s\007" "$_screentitle"
+    #printf "Setting title to %s\n" $_screentitle
+    if [ -n "$WINDOW" ] ; then         # We are in a screen session
+        #printf '\ek%s\e\\' "$_screentitle"
+        #screen -X eval "title $_screentitle"
+        #screen -X eval "shelltitle $_screentitle"
+        printf "\033k%s\033\\" "$_screentitle"
+    fi
+    # Set the terminal title unconditionally
+    printf "\033]0;%s\007" "$_screentitle"
+
+    # Return 0 for proper usage of this function with && below...
+    return 0
 }
 
 #echo -e '\033k'$_screentitle'\033\\'
@@ -96,7 +99,6 @@ xterm*|rxvt*)
 *)
     ;;
 esac
-
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
