@@ -1,0 +1,14 @@
+createdAt: "2018-04-20T19:46:12.338Z"
+updatedAt: "2018-04-20T20:05:05.449Z"
+type: "MARKDOWN_NOTE"
+folder: "ceeec5539e99008dff12"
+title: "Unresolved issues"
+content: '''
+  # Unresolved issues
+  
+  * I'm trying to generate a suggestion from the Settings app related to fingerprint authentication, as an example of a suggestion to disable. I'm attempting to run the emulator with a specific AVD, but with a customized system.img. There are dependencies between the emulator and AVDs that I don't understand.
+  
+'''
+tags: []
+isStarred: false
+isTrashed: false

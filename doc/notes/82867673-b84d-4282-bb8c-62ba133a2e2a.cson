@@ -1,0 +1,27 @@
+createdAt: "2018-04-20T17:52:46.372Z"
+updatedAt: "2018-04-20T17:58:48.852Z"
+type: "MARKDOWN_NOTE"
+folder: "ceeec5539e99008dff12"
+title: "Using repo with AOSP"
+content: '''
+  # Using `repo` with AOSP
+  
+  ## Quickstart
+  
+  ### Initialize the repo
+  
+  ```bash
+  repo init -u https://android.googlesource.com/platform/manifest
+  ```
+  
+  ### Grab a specific branch/tag
+  
+  This can be done right after initialization or later to switch.
+  
+  ```bash
+  repo init -b android-8.1.0_r1
+  ```
+'''
+tags: []
+isStarred: false
+isTrashed: false

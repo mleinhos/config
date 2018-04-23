@@ -1,0 +1,117 @@
+createdAt: "2018-04-20T17:58:51.470Z"
+updatedAt: "2018-04-20T18:22:40.705Z"
+type: "MARKDOWN_NOTE"
+folder: "ceeec5539e99008dff12"
+title: "Building AOSP"
+content: '''
+  # Building AOSP
+  
+  Once AOSP is initialized and on a branch, you can build it as follows:
+  
+  ## Grab the docker container for building
+  
+  Clone from `git@gitlab.labs:SHARE/docker-share`. In the alternate create your own:
+  
+  ```
+  # We start with our base OS, Ubuntu 14.04
+  FROM ubuntu:16.04
+  
+  # This Dockerfile is HEAVILY based on Mike Wallace "mike.wallace@risesoftware.com" version
+  # https://github.com/MikeWallaceDev/docker-aosp-build
+  MAINTAINER  Charlie Illingworth "charlie.illingworth@twosixlabs.com"
+  
+  ENV DEBIAN_FRONTEND noninteractive
+  
+  RUN apt-get -qq update
+  RUN apt-get -qqy upgrade
+  
+  # Install OpenJDK 8
+  RUN apt-get -qq update && apt-get install -y openjdk-8-jdk
+  
+  # install all of the tools and libraries that we need.
+  RUN apt-get -qq update && apt-get install -y git-core gnupg flex bison gperf build-essential \\
+      	    zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 \\
+  	    lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache \\
+  	    libgl1-mesa-dev libxml2-utils xsltproc unzip python repo android-tools-adb android-tools-fastboot \\
+  	    net-tools sudo iputils-ping libssl-dev bc usbutils apt
+  
+  # End of the Dockerfile
+  ```
+  
+  ## Build the container
+  
+  ```bash
+  $ sudo docker build -t aosp-build:latest .
+  ```
+  
+  ## Launch the container
+  
+  Your should just put this stuff in a script. Is assumes you are running KVM, which you'll need for the emulator.
+  
+  ```bash
+  $ _container_name=aosp-build:latest
+  
+  $ sudo chmod o+rw /dev/kvm
+  
+  $ sudo docker run                   \\
+      -v /home/$(whoami):$HOME      \\
+      -v /etc/passwd:/etc/passwd:ro \\
+      -v /etc/group:/etc/group:ro   \\
+      -v /dev/bus/usb:/dev/bus/usb  \\
+      --tmpfs /tmp:exec,mode=1777   \\
+      -u $(id -u):$(id -g)          \\
+      --group-add=plugdev           \\
+      -e USER=$(whoami)             \\
+      -e HOME=$HOME                 \\
+      --cap-add SYS_ADMIN           \\
+      --device=/dev/fuse            \\
+      --device=/dev/kvm:/dev/kvm:rw \\
+      --device=/dev/ttyS0           \\
+      --security-opt apparmor:unconfined \\
+      --cpuset-cpus="0-6"           \\
+      --dns=172.20.0.90             \\
+      --privileged                  \\
+      --expose=5037-5038            \\
+      -it --rm                      \\
+      -v $SHARE_AOSP_DIR:/src       \\
+      -v $SHARE_ANDROID_STUDIO_DIR:/sdk \\
+      -v $SHARE_KERNEL:/goldfish    \\
+      $_container_name              \\
+      ${@}
+  ```
+  
+  Then run the script with:
+  ```bash
+  $ aosp_docker /bin/bash
+  ```
+  
+  ## Set up the environment
+  Here's how my environment is set up upon spawning the Docker container:
+  
+  ```bash
+  $ echo $SHARE_AOSP_DIR
+  /home/matt.leinhos/proj/share/aosp-pub
+  $ echo $SHARE_ANDROID_STUDIO_DIR
+  /home/matt.leinhos/proj/share/android-studio
+  $ echo $SHARE_KERNEL
+  /home/matt.leinhos/proj/share/goldfish
+  ```
+  
+  Within the container in the `/src` directory, I run:
+  ```bash
+  $ source build/envsetup.sh
+  $ lunch aosp_x86-userdebug
+  ```
+  
+  ## Build
+  Within `/src` in the container, run
+  
+  ```bash
+  $ make -j N
+  ```
+  
+  where `N` is a suitable based on the number of cores you have.
+'''
+tags: []
+isStarred: false
+isTrashed: false

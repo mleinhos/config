@@ -1,0 +1,148 @@
+createdAt: "2018-04-23T12:27:12.760Z"
+updatedAt: "2018-04-23T12:28:55.684Z"
+type: "MARKDOWN_NOTE"
+folder: "3199f29cdae73984daf7"
+title: "Building Xen"
+content: '''
+  # Building Xen
+  
+  ##  Build
+  
+  Clone the Xen repo and checkout the tag you want:
+  
+  ```
+  git clone  git://xenbits.xen.org/xen.git 
+  cd xen
+  git checkout RELEASE-4.9.1
+  ```
+  
+  Within the xen directory, create your own script to build Xen. It will be executed within a docker container later. We call this `build-deb.sh`.
+  
+  ```
+  #!/bin/sh -eux
+  
+  export FETCHER=/bin/false
+  export WGET=/bin/false
+  
+  ./configure --disable-docs --disable-stubdom \\
+  	--enable-targets=x86_64-pep \\
+  	--disable-qemu-traditional \\
+  	--with-system-qemu \\
+  	--with-system-seabios=/usr/share/seabios/bios.bin
+  
+  make debball
+  ```
+  
+  Build Xen within the [starlabio/xen](https://hub.docker.com/r/starlabio/xen) docker container. This docker container has all the prerequisites for building. Here's the Dockerfile for posterity:
+  
+  ```
+  FROM starlabio/ubuntu-base:1.2
+  MAINTAINER Derek Straka <derek@starlab.io>
+  
+  RUN sed -e 's:deb h:deb [arch=amd64] h:' -e 's:deb-src h:deb-src [arch=amd64] h:' -i /etc/apt/sources.list && \\
+      find /etc/apt/sources.list.d/ -type f -exec sed -e 's:deb h:deb [arch=amd64] h:' -e 's:deb-src h:deb-src [arch=amd64] h:' -i {} \\;
+  
+  # Xen depends
+  RUN apt-get --quiet --yes update && \\
+  	apt-get --quiet --yes install libx11-dev ocaml-nox ocaml-findlib \\
+  		ocaml-native-compilers libpixman-1-dev libsystemd-dev \\
+  		texinfo libnl-3-dev libnl-utils libnl-cli-3-dev libbz2-dev libpci-dev \\
+  		m4 cmake gcc-multilib build-essential git-core seabios build-essential \\
+          pkg-config ca-certificates curl wget git libssl-dev software-properties-common bc && \\
+  	apt-get --quiet --yes build-dep xen && \\
+  	apt-get clean && \\
+      rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  
+  ADD build-deb.sh /usr/local/bin/build-deb.sh
+  ```
+  
+  Here's how to run it:
+  ```
+  docker run -i --rm -v $(pwd):/source starlabio/xen ./build-deb.sh
+  ```
+  
+  ## Installation
+  
+  First remove old versions of Xen. If you want multiple versions side-by-side, you'll have to figure out where to put multiple toolchains on the filesystem.
+  
+  Secondly, install the debball you just built:
+  
+  ```
+  dpkg -i dist/xen upstream-4.9.1.deb 
+  ```
+  
+  Update the system so the proper Xen services will be launched on boot:
+  
+  ```
+  > cat /etc/rc.local
+  #!/bin/sh -e
+  #
+  # rc.local
+  #
+  # ......
+  
+  for _s in xen xencommons xendomains xen-watchdog
+  do
+  	service $_s start
+  done
+  
+  exit 0
+  ```
+  
+  Update `/etc/default/grub.d/xen.cfg` to contain these lines:
+  
+  ```
+  XEN_OVERRIDE_GRUB_DEFAULT=0
+  GRUB_CMDLINE_XEN_DEFAULT="console=vga,com1"
+  GRUB_CMDLINE_XEN="console=vga,com1"
+  GRUB_CMDLINE_LINUX_XEN_REPLACE_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT earlyprintk=xenboot console=hvc0"
+  GRUB_CMDLINE_LINUX_XEN_REPLACE="$GRUB_CMDLINE_LINUX"
+  ```
+  
+  If you want to boot into Xen by default, you can change `/etc/default/grub` to contain a line like:
+  
+  ```
+  GRUB_DEFAULT=xen-4.9.1
+  ```
+  
+  It appears that Xen 4.9 collaborates with `update-grub` to register an EFI image for boot. Older versions  of Xen may not. In that case, you can follow the directions at http://note.yuhc.me/2017/09/install-xen-on-ubuntu-uefi/ and https://wiki.xenproject.org/wiki/Xen_EFI, which are outlined here.
+  
+  Only follow the instructions below if `update-grub` doesn't work for you.
+  
+  #. Create a file/directory structure mimicking this example:
+  
+  ```
+  > find /boot/efi/EFI/xen-4.6/
+  /boot/efi/EFI/xen-4.6/
+  /boot/efi/EFI/xen-4.6/xen-4.6-amd64.efi
+  /boot/efi/EFI/xen-4.6/vmlinuz-4.13.0-31-generic.efi.signed
+  /boot/efi/EFI/xen-4.6/vmlinuz-4.13.0-31-generic
+  /boot/efi/EFI/xen-4.6/initrd.img-4.13.0-31-generic
+  /boot/efi/EFI/xen-4.6/xen.cfg
+  ```
+  
+  Where `xen.cfg` contains:
+  
+  ```
+  # /boot/efi/EFI/xen/xen.cfg
+  
+  [global]
+  default=xen4.6
+  
+  [xen4.6]
+  options=console=vga,com1 com1=115200,8n1 iommu=verbose loglvl=all
+  kernel=vmlinuz-4.13.0-31-generic BOOT_IMAGE=/vmlinuz-4.13.0-31-generic root=/dev/mapper/ubuntu--vg-root ro ramquiet splash vt.handoff=7 console=hvc0
+  ramdisk=initrd.img-4.13.0-31-generic
+  ```
+  
+  Then, run `efibootmgr`. In my case I ran:
+  
+  ```
+  efibootmgr -c -d /dev/nvme0n1 -p 1 -w -L xen-4.6 -l "\\EFI\\xen-4.6\\xen-4.6-amd64.efi"
+  ```
+  
+  but verify that this is correct for your system.
+'''
+tags: []
+isStarred: false
+isTrashed: true
