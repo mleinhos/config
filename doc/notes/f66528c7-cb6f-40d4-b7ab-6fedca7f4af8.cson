@@ -1,5 +1,5 @@
 createdAt: "2018-04-20T17:58:51.470Z"
-updatedAt: "2018-04-20T18:22:40.705Z"
+updatedAt: "2018-05-02T17:55:47.129Z"
 type: "MARKDOWN_NOTE"
 folder: "ceeec5539e99008dff12"
 title: "Building AOSP"
@@ -34,8 +34,6 @@ content: '''
   	    lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache \\
   	    libgl1-mesa-dev libxml2-utils xsltproc unzip python repo android-tools-adb android-tools-fastboot \\
   	    net-tools sudo iputils-ping libssl-dev bc usbutils apt
-  
-  # End of the Dockerfile
   ```
   
   ## Build the container
@@ -100,7 +98,14 @@ content: '''
   Within the container in the `/src` directory, I run:
   ```bash
   $ source build/envsetup.sh
+  ```
+  followed by either
+  ```bash
   $ lunch aosp_x86-userdebug
+  ```
+  or
+  ```bash
+  $ lunch aosp_g8342-userdebug
   ```
   
   ## Build
@@ -111,6 +116,75 @@ content: '''
   ```
   
   where `N` is a suitable based on the number of cores you have.
+  
+  ## Flashing
+  
+  When the phone is off, press down the `VOL_UP` button and plug in the USB. Once the light stays a constant color, you can release the button. 
+  
+  Make sure the environment variable `SHARE_AOSP_DIR` points to an AOSP build that used
+  ```bash
+  $ lunch aosp_g8342-userdebug
+  ```
+  prior to the build. Then, run a script like this that runs `fastboot`.
+  
+  ```bash
+  #!/bin/bash
+  
+  set -x
+  
+  ##
+  ## See http://devops.labs/wiki/display/SHA/Sony+XZ1
+  ##
+  
+  if [ -z $SHARE_AOSP_DIR ]; then
+      SHARE_AOSP_DIR=$HOME/proj/share/aosp-pub
+  fi
+  
+  echo "Using AOSP build directory: $SHARE_AOSP_DIR"
+  
+  fastboot=$SHARE_AOSP_DIR/out/host/linux-x86/bin/fastboot
+  
+  # Figure out where this script is
+  _preldir="$( dirname "${BASH_SOURCE[0]}" )"
+  _pdir="$( readlink -fn "$_preldir" )"
+  
+  _storage=$_pdir/tmp
+  
+  echo $_pdir
+  echo $_storage
+  
+  rm -fr $_storage 2> /dev/null 
+  
+  mkdir $_storage
+  pushd $_storage
+  
+  ##
+  ## Vendor (only flash the oem partition!)
+  ##
+  cp $SHARE_AOSP_DIR/vendor/sony/image/SW_binaries_for_Xperia_AOSP_O_MR0_4.4_v05_yoshino.zip .
+  
+  unzip SW_binaries_for_Xperia_AOSP_O_MR0_4.4_v05_yoshino.zip
+  
+  $fastboot flash oem SW_binaries_for_Xperia_AOSP_O_MR0_4.4_v05_yoshino.img
+  
+  rm -f *.img
+  rm -f android-info.txt
+  
+  ##
+  ## Other images
+  ##
+  
+  cp $SHARE_AOSP_DIR/out/target/product/poplar/*.img .
+  cp $SHARE_AOSP_DIR/out/target/product/poplar/android-info.txt .
+  
+  # N.B. (soon deprecated): Edit android-info.txt to say G8342 instead of G8341
+  sed -i 's/G8341/G8342/' android-info.txt
+  
+  export ANDROID_PRODUCT_OUT=$(pwd) # Once per shell.
+  $fastboot flashall -w
+  
+  popd
+  ```
 '''
 tags: []
 isStarred: false

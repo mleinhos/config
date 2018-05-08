@@ -1,13 +1,26 @@
 createdAt: "2018-04-20T19:46:12.338Z"
-updatedAt: "2018-04-20T20:05:05.449Z"
+updatedAt: "2018-05-03T15:51:07.635Z"
 type: "MARKDOWN_NOTE"
 folder: "ceeec5539e99008dff12"
-title: "Unresolved issues"
+title: "Misc Android notes"
 content: '''
-  # Unresolved issues
+  # Misc Android notes
   
   * I'm trying to generate a suggestion from the Settings app related to fingerprint authentication, as an example of a suggestion to disable. I'm attempting to run the emulator with a specific AVD, but with a customized system.img. There are dependencies between the emulator and AVDs that I don't understand.
-  
+  * Changes to `Settings` app appear in `out/target/product/generic_x86/system.img`
+  * Emulator is started with `/home/matt.leinhos/Android/Sdk/emulator/qemu/linux-x86_64/qemu-system-x86_64 -netdelay none -netspeed full -avd Nexus_6P_API_27 P`
+  * Update `/etc/udev/rules.d/51-android.rules` to contain:
+  ```
+  # Sony XZ1
+  SUBSYSTEM=="usb", ATTR{idVendor}=="0fce", ATTR{idProduct}=="0dde", MODE="0600", OWNER="matt.leinhos"
+  SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", ATTR{idProduct}=="01f3", MODE="0600", OWNER="matt.leinhos"
+  SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", ATTR{idProduct}=="51f3", MODE="0600", OWNER="matt.leinhos"
+  ```
+  * Then run `udevadm control --reload`
+  * Button combos:
+    * fastboot `VOL_UP` + USB
+    * flash    `VOL_DN` + USB
+    * hard reset: `VOL_UP` + power
 '''
 tags: []
 isStarred: false

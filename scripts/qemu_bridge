@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#set -x
+
+KVMNET_UID=1000
+KVMNET_GID=$(grep kvm /etc/group | cut -d ':' -f 3)
+
+# number of TUN/TAP devices to setup
+NUM_OF_DEVICES=3
+
+BRIDGE_NAME=kvmbr0
+BRIDGE_NET=192.168.100.254
+BRIDGE_MASK=255.255.255.0
+
+
+case $1 in
+        start)
+                modprobe tun
+                echo "Setting up bridge device $BRIDGE_NAME"
+                brctl addbr $BRIDGE_NAME
+                ifconfig $BRIDGE_NAME $BRIDGE_NET netmask $BRIDGE_MASK  up
+                for ((i=0; i < NUM_OF_DEVICES ; i++)); do
+                        echo -n "Setting up "
+                        tunctl -b -g ${KVMNET_GID} -t kvmnet$i
+                        #tunctl -b -u ${KVMNET_UID} -t kvmnet$i
+                        brctl addif $BRIDGE_NAME kvmnet$i
+                        ifconfig kvmnet$i up 0.0.0.0 promisc
+                done
+        ;;
+        stop)
+                for ((i=0; i < NUM_OF_DEVICES ; i++)); do
+                        ifconfig kvmnet$i down
+                        brctl delif $BRIDGE_NAME kvmnet$i
+                        tunctl -d kvmnet$i
+                done
+                ifconfig $BRIDGE_NAME down
+                brctl delbr $BRIDGE_NAME
+                rmmod tun
+        ;;
+        *)
+                echo "Usage: $(basename $0) (start|stop)"
+        ;;
+esac

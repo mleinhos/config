@@ -19,6 +19,16 @@
       "key": "3199f29cdae73984daf7",
       "color": "#3FD941",
       "name": "Xen"
+    },
+    {
+      "key": "42e2d6ebdefa06b5781d",
+      "color": "#FF8E00",
+      "name": "Linux system programming"
+    },
+    {
+      "key": "56482c3f3104fdfecbaa",
+      "color": "#2BA5F7",
+      "name": "HR"
     }
   ],
   "version": "1.0"

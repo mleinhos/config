@@ -1,0 +1,20 @@
+#!/bin/bash
+
+##
+## Assists with AWS IP filtering by routing EC2 traffic through VPN
+## gateway.
+##
+
+#set -x
+
+_gw=$( route | grep tun0 | head -1 | awk '{ print $2 }' )
+
+if (( $# < 1 )); then
+   echo "Usage: $0 host... "
+   exit 1
+
+fi
+
+for host in $@; do
+    sudo route add -host $host gw $_gw
+done

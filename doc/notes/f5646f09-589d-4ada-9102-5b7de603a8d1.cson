@@ -1,5 +1,5 @@
 createdAt: "2018-04-20T17:48:07.693Z"
-updatedAt: "2018-04-20T17:51:07.443Z"
+updatedAt: "2018-05-02T14:56:46.065Z"
 type: "MARKDOWN_NOTE"
 folder: "251dcf20058376c64781"
 title: "VPN"
@@ -52,6 +52,29 @@ content: '''
   
   ### DNS
   I had an issue with name resolution. DHCP was not updating the nameservers that were ultimately used by `/etc/resolv.conf`. I installed the package `dnsmasq` and that fixed the problem.
+  
+  Notes on resolution issues:
+  * devops.labs (172.31.255.211) 
+  * Uses Name Server:         172.20.0.90
+  * Create file `/etc/dnsmasq.d/vpn.conf` with contents `server=/labs/172.20.0.90`. This makes name resolution work.
+  
+  ### Certs
+  
+  Put certs under `/usr/local` and install them:
+  
+  ```bash
+  $ sudo cp *.crt /usr/local/share/ca-certificates/
+  $ sudo update-ca-certificates 
+  Updating certificates in /etc/ssl/certs...
+  3 added, 0 removed; done.
+  Running hooks in /etc/ca-certificates/update.d...
+  
+  Adding debian:twosix-intermediate1-ca.pem
+  Adding debian:twosix-intermediate2-ca.pem
+  Adding debian:twosix-root-ca.pem
+  done.
+  done.
+  ```
 '''
 tags: []
 isStarred: false

@@ -1,5 +1,5 @@
 createdAt: "2018-04-20T17:52:46.372Z"
-updatedAt: "2018-04-20T17:58:48.852Z"
+updatedAt: "2018-05-04T14:08:42.315Z"
 type: "MARKDOWN_NOTE"
 folder: "ceeec5539e99008dff12"
 title: "Using repo with AOSP"
@@ -10,16 +10,38 @@ content: '''
   
   ### Initialize the repo
   
+  From the open repository
   ```bash
-  repo init -u https://android.googlesource.com/platform/manifest
+  $ repo init -u https://android.googlesource.com/platform/manifest
+  ```
+  
+  From `gitlab`
+  ```bash
+  $ repo init -u git+ssh://git@gitlab.labs/SHARE/manifest.git -b dev_share
+  ```
+  
+  From the enclave-free version at `gitlab`
+  ```bash
+  $ repo init -u git+ssh://git@gitlab.labs/SHARE/manifest.git -b sony-8.0.0_r15
   ```
   
   ### Grab a specific branch/tag
   
-  This can be done right after initialization or later to switch.
+  This can be done right after initialization or later (to switch).
   
   ```bash
   repo init -b android-8.1.0_r1
+  ```
+  
+  ### Update the repo
+  
+  ```bash
+  $ repo sync [--force-sync [path]]
+  ```
+  
+  For instance,
+  ```bash
+  $ repo sync --force-sync system/vold
   ```
 '''
 tags: []

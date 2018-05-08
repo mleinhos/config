@@ -1,8 +1,12 @@
 #!/bin/bash
 
+##
+## Turn off, then on, the network interface. Run as root.
+##
+
 set -x
 
-_iface=br0
+_iface=xenbr0
 
-sudo ifdown $_iface
-sudo ifup   $_iface
+ifdown $_iface
+ifup   $_iface
