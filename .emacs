@@ -34,7 +34,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Courier New" :slant normal :weight normal :height 100 :width normal)))))
+ '(default ((t (:family "DejaVu Sans Mono" :slant normal :weight normal :height 83 :width normal :foundry "PfEd")))))
 
 (column-number-mode)
 
@@ -44,10 +44,30 @@
 ;(setq-default buffer-file-coding-system 'utf-8-dos)
 ;(set-default-coding-systems 'utf-8-dos)
 
-; Disable tabs, thus allowing guess-tabs
-(setq-default indent-tabs-mode nil)
-(setq c-basic-indent 4)
-(setq tab-width 4)
+
+;;
+;; Tab settings: pick one tab-always-indent below
+;;
+
+;; make tab key always call a indent command.
+(setq-default tab-always-indent t)
+
+;; make tab key call indent command or insert tab character, 
+;; depending on cursor position
+;(setq-default tab-always-indent nil)
+
+;; make tab key do indent first then completion.
+;(setq-default tab-always-indent 'complete)
+
+
+;; M-x set-variable RET c-basic-offset RET 8
+(setq c-basic-offset 8)
+
+; I don't know what these do...
+;(setq tab-width 8)
+;(setq-default tab-width 8)
+
+;(defvaralias 'c-basic-offset 'tab-width)
 
 ; Auto-indent upon newline
 (add-hook 'list-mode-hook '(lambda ()
@@ -82,6 +102,10 @@
 ;               (lambda ()
 ;                (font-lock-add-keywords nil
 ;                 '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXXX\\):" 1 font-lock-warning-face t)))))
+;(add-hook 'text-mode-hook 'highlight-todos)
+
+(autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
+
 
 (require 'xcscope)
 
@@ -226,10 +250,13 @@
 
 ;; ggtags
 ;(require 'ggtags)
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
-              (ggtags-mode 1))))
+;(add-hook 'c-mode-common-hook
+;          (lambda ()
+;            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+;              (ggtags-mode 1))))
+
+;; or gtags ???
+;(use-package gtags :ensure t :defer t)
 
 ;(define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
 ;(define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)

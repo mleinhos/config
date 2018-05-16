@@ -3,34 +3,31 @@
 
 #if (defined MYDEBUG)
 
-#   define VERBOSE(fmt, ...)                 \
+#   define VERBOSE(fmt, ...)					\
     do {                                        \
-        if ( MYVERBOSE && PRINTING_OK() )    \
+        if ( MYVERBOSE )						\
             pr_debug( fmt, ##__VA_ARGS__ );     \
     } while(0)
 
-#  define VERBOSE_RAW(fmt, ...)                                   \
-    do {                                                             \
-        if ( MYVERBOSE && PRINTING_OK() )                         \
-            printk( KERN_DEBUG fmt, ##__VA_ARGS__ );                 \
+#  define VERBOSE_RAW(fmt, ...)							\
+    do {												\
+        if ( MYVERBOSE )								\
+            printk( KERN_DEBUG fmt, ##__VA_ARGS__ );	\
     } while(0)
 
-#  define DEBUG(fmt, ...)                    \
+#  define DEBUG(fmt, ...)						\
     do {                                        \
-        if ( PRINTING_OK() )                 \
-            pr_debug( fmt, ##__VA_ARGS__ );     \
+		pr_debug( fmt, ##__VA_ARGS__ );			\
     } while(0)
 
-#  define DEBUG_RAW(fmt, ...)                        \
-    do {                                                \
-        if ( PRINTING_OK() )                         \
-            printk( KERN_DEBUG fmt, ##__VA_ARGS__ );    \
+#  define DEBUG_RAW(fmt, ...)						\
+    do {											\
+		printk( KERN_DEBUG fmt, ##__VA_ARGS__ );	\
     } while(0)
 
-#   define PRINT_RAW(lvl, fmt, ...)                      \
-    do {                                                   \
-        if ( PRINTING_OK() )                            \
-            printk( lvl fmt, ##__VA_ARGS__ );       \
+#   define PRINT_RAW(lvl, fmt, ...)				\
+    do {										\
+		printk( lvl fmt, ##__VA_ARGS__ );       \
     } while(0)
 
 #else // MYDEBUG
@@ -39,15 +36,13 @@
 #   define VERBOSE_RAW(fmt, ...)      ((void)0)
 #   define DEBUG(fmt, ...)            ((void)0)
 #   define DEBUG_RAW(fmt, ...)        ((void)0)
-//#   define PRINT(lvl, fmt, ...)       ((void)0)
 #   define PRINT_RAW(lvl, fmt, ...)   ((void)0)
 
 #endif // MYDEBUG
 
-#define PRINT(lvl, fmt, ...)                         \
-    do {                                                \
-        if ( PRINTING_OK() )                         \
-            printk( lvl pr_fmt(fmt), ##__VA_ARGS__ );   \
+#define PRINT(lvl, fmt, ...)						\
+    do {											\
+		printk( lvl pr_fmt(fmt), ##__VA_ARGS__ );	\
     } while(0)
 
 
@@ -67,16 +62,14 @@
 
 #define DEBUG_BREAK() DEBUG_EMIT_BREAKPOINT()
 
-#define _ASSERT(_x)                                               \
-        do {                                                         \
-            if (_x) break;                                           \
-            if ( PRINTING_OK() ) {                                \
-                pr_emerg( "### ASSERTION FAILED %s: %s: %d: %s\n",   \
-                          __FILE__, __func__, __LINE__, #_x);        \
-                dump_stack();                                        \
-            }                                                        \
-            DEBUG_BREAK();                                           \
-        } while (0)
+#define _ASSERT(_x)												\
+	do {														\
+		if (_x) break;											\
+		pr_emerg( "### ASSERTION FAILED %s: %s: %d: %s\n",		\
+				  __FILE__, __func__, __LINE__, #_x);			\
+		dump_stack();											\
+		DEBUG_BREAK();											\
+	} while (0)
 
 // Always check asserts, for now...
 #define MYASSERT(_x) _ASSERT( (_x) )
