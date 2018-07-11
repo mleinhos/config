@@ -1,5 +1,5 @@
 createdAt: "2018-04-20T17:48:07.693Z"
-updatedAt: "2018-05-02T14:56:46.065Z"
+updatedAt: "2018-05-30T15:50:32.053Z"
 type: "MARKDOWN_NOTE"
 folder: "251dcf20058376c64781"
 title: "VPN"
@@ -42,7 +42,16 @@ content: '''
   
   TwoSix replaced `/etc/pam.d/common-auth` and `/etc/pam.d/common-password`
   
-  ! Password problems
+  The harddrive should be encrypted upon installation. Passwords can be manipulated later via the command line, as follows:
+  
+  ```bash
+  # add a new passphrase for boot up - 
+  $ sudo cryptsetup luksAddKey /dev/nvme0n1p3 --key-slot 1
+  # Verrify key slots 0 and 1 are now in use
+  $ sudo cryptsetup luksDump /dev/nvme0n1p3
+  ```
+  
+  ###### Password problems
   
   I encountered a problem where I logged in, authenticated with `sudo` but then got locked out of `sudo` (invalid password error). It turned out I had exceeded the max number of failed logins. I fixed this with:
   
@@ -50,7 +59,7 @@ content: '''
   pam_tally2 --user=matt.leinhos --reset
   ```
   
-  ### DNS
+  ###### DNS
   I had an issue with name resolution. DHCP was not updating the nameservers that were ultimately used by `/etc/resolv.conf`. I installed the package `dnsmasq` and that fixed the problem.
   
   Notes on resolution issues:
@@ -58,7 +67,7 @@ content: '''
   * Uses Name Server:         172.20.0.90
   * Create file `/etc/dnsmasq.d/vpn.conf` with contents `server=/labs/172.20.0.90`. This makes name resolution work.
   
-  ### Certs
+  ###### Certs
   
   Put certs under `/usr/local` and install them:
   

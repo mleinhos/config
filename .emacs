@@ -48,26 +48,9 @@
 ;;
 ;; Tab settings: pick one tab-always-indent below
 ;;
+(load-file "~/.emacs-tabs.el")
 
-;; make tab key always call a indent command.
-(setq-default tab-always-indent t)
-
-;; make tab key call indent command or insert tab character, 
-;; depending on cursor position
-;(setq-default tab-always-indent nil)
-
-;; make tab key do indent first then completion.
-;(setq-default tab-always-indent 'complete)
-
-
-;; M-x set-variable RET c-basic-offset RET 8
-(setq c-basic-offset 8)
-
-; I don't know what these do...
-;(setq tab-width 8)
-;(setq-default tab-width 8)
-
-;(defvaralias 'c-basic-offset 'tab-width)
+(global-set-key "\C-c r" 'load-file "~/.emacs")
 
 ; Auto-indent upon newline
 (add-hook 'list-mode-hook '(lambda ()
@@ -83,16 +66,9 @@
                               (when indent-tabs-mode
                                 (guess-style-guess-tab-width))))
 
-
 ; Highlighting
-(global-hi-lock-mode 1)
 (global-hl-line-mode 1)
-;(set-face-background 'hl-line "#3e4446")
-;(set-face-background 'hl-line "#3f003f")
-; Shades of dark red vvv
-;(set-face-background 'hl-line "#990000")
-(set-face-background 'hl-line "#330000")
-(set-face-foreground 'hl-line nil)
+(set-face-background 'hl-line "DarkRed")
 
 ;(defun highlight-todos (font-lock-add-keywords nil
 ;             '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXXX\\):" 1 font-lock-warning-face t))))
@@ -104,8 +80,15 @@
 ;                 '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXXX\\):" 1 font-lock-warning-face t)))))
 ;(add-hook 'text-mode-hook 'highlight-todos)
 
+; Display whitespace
+; Toggle whitespace mdoe with "M-x global-whitespace-mode", or "C-c w"
 (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
 
+;(global-set-key "\C-c_w" 'whitespace-mode)
+;(global-set-key "\C-c_t" 'whitespace-toggle-options)
+(global-set-key "\C-c w" 'global-whitespace-mode)
+
+;(global-set-key "\C-c=t" 'global-whitespace-toggle-options)
 
 (require 'xcscope)
 
@@ -269,3 +252,4 @@
 
 ;; Useful; first create this file!
 ; (load-file "~/.emacs.d/cedet-projects.el")
+

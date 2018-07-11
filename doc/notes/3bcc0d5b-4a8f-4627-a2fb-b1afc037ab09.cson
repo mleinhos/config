@@ -64,7 +64,7 @@ content: '''
   Secondly, install the debball you just built:
   
   ```
-  dpkg -i dist/xen upstream-4.9.1.deb 
+  dpkg -i dist/xen-upstream-4.9.1.deb 
   ```
   
   Update the system so the proper Xen services will be launched on boot:
@@ -138,11 +138,29 @@ content: '''
   ```
   
   but verify that this is correct for your system.
+  
+  ### Network config
+  
+  `/etc/network/interfaces` should create a bridge and look something like this:
+  
+  ```
+  auto lo
+  iface lo inet loopback
+  
+  auto  enp0s31f6
+  iface enp0s31f6 inet manual
+  
+  dns-search local
+  
+  auto  xenbr0
+  iface xenbr0 inet dhcp
+  	bridge_ports enp0s31f6
+  ```
 '''
 title: "Building Xen"
 folder: "3199f29cdae73984daf7"
 createdAt: "2018-04-23T12:25:31.075Z"
-updatedAt: "2018-04-23T12:29:55.094Z"
+updatedAt: "2018-05-31T19:01:11.423Z"
 isStarred: false
 isTrashed: false
 tags: []
