@@ -4,6 +4,9 @@
 ;; gets activated by another package (Gnus, auth-source, ...).
 (load-file "~/.devtools/cedet-repo/cedet-devel-load.el")
 
+;; Put extra modules in this directory
+(add-to-list 'load-path "~/.devtools")
+
 ;(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/") 
 
 (custom-set-variables
@@ -44,13 +47,15 @@
 ;(setq-default buffer-file-coding-system 'utf-8-dos)
 ;(set-default-coding-systems 'utf-8-dos)
 
-
 ;;
 ;; Tab settings: pick one tab-always-indent below
 ;;
 (load-file "~/.emacs-tabs.el")
 
-(global-set-key "\C-c r" 'load-file "~/.emacs")
+(defun reload-dotemacs ()
+  (interactive)
+  (load-file "~/.emacs"))
+(global-set-key (kbd "C-c r") 'reload-dotemacs)
 
 ; Auto-indent upon newline
 (add-hook 'list-mode-hook '(lambda ()
@@ -69,26 +74,18 @@
 ; Highlighting
 (global-hl-line-mode 1)
 (set-face-background 'hl-line "DarkRed")
+;(set-face-background 'hl-line "DarkBlue")
+;(set-face-background 'hl-line "DarkOliveGreen")
 
-;(defun highlight-todos (font-lock-add-keywords nil
-;             '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXXX\\):" 1 font-lock-warning-face t))))
-;(add-hook 'text-mode-hook 'highlight-todos)
-
-;(add-hook 'c-mode-common-hook
-;               (lambda ()
-;                (font-lock-add-keywords nil
-;                 '(("\\<\\(FIXME\\|TODO\\|BUG\\|XXXX\\):" 1 font-lock-warning-face t)))))
-;(add-hook 'text-mode-hook 'highlight-todos)
+;; https://www.emacswiki.org/emacs/download/fic-mode.el
+(require 'fic-mode)
+(add-hook 'c++-mode-hook 'turn-on-fic-mode) 
+(add-hook 'c-mode-hook 'turn-on-fic-mode) 
 
 ; Display whitespace
 ; Toggle whitespace mdoe with "M-x global-whitespace-mode", or "C-c w"
 (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
-
-;(global-set-key "\C-c_w" 'whitespace-mode)
-;(global-set-key "\C-c_t" 'whitespace-toggle-options)
-(global-set-key "\C-c w" 'global-whitespace-mode)
-
-;(global-set-key "\C-c=t" 'global-whitespace-toggle-options)
+(global-set-key (kbd "C-c w") 'global-whitespace-mode)
 
 (require 'xcscope)
 
