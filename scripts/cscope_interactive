@@ -1,0 +1,14 @@
+#!/bin/bash
+
+##
+## Invokes cscope in interactive mode
+## See also: build_cscope_listing
+##
+
+set -x
+
+# Don't update cross-ref
+#cscope -d .
+
+# Do update cross-ref, use listing built earlier
+cscope -kR -i $1

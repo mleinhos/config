@@ -1,3 +1,16 @@
 #!/bin/bash
 
-cscope -b -q -k -R
+LNX=.
+
+find $LNX -type f \
+	-path "$LNX/arch/*" ! -path "$LNX/arch/i386*" -prune -o               \
+	-path "$LNX/include/asm-*" ! -path "$LNX/include/asm-i386*" -prune -o \
+	-path "$LNX/tmp*" -prune -o                                           \
+	-path "$LNX/Documentation*" -prune -o                                 \
+	-path "$LNX/scripts*" -prune -o                                       \
+        -name "*.[chxsS]" -print > source.files
+
+#	-path "$LNX/drivers*" -prune -o
+
+#cscope -b -k -R -isource.files
+ctags --declarations --globals `cat source.files`

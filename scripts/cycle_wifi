@@ -1,0 +1,17 @@
+#!/bin/bash
+
+##
+## How to find the wifi driver:
+##  lspci -knn | grep Net -A2
+## 
+
+set -x
+
+sudo service network-manager stop
+sudo service networking stop
+
+rmmod ath10k_pci
+modprobe ath10k_pci
+
+sudo service network-manager start
+sudo service networking start

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+LNX=$1
+
+find $LNX/ipc        \
+     $LNX/lib        \
+     $LNX/arch       \
+     $LNX/init       \
+     $LNX/security   \
+     $LNX/virt       \
+     $LNX/kernel     \
+     $LNX/fs         \
+     $LNX/net        \
+     $LNX/sound      \
+     $LNX/android    \
+     $LNX/samples    \
+     $LNX/crypto     \
+     $LNX/firmware   \
+     $LNX/drivers    \
+     $LNX/include    \
+     $LNX/mm         \
+     $LNX/block      \
+     -type f         \
+     -name '*.c' -o -name '*.h' -name '*.S' \
+     | etags -

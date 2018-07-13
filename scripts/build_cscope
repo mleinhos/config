@@ -1,0 +1,10 @@
+#!/bin/bash
+
+##
+## Builds cscope database from given listing file. 
+## See also: build_cscope_listing
+##
+
+set -x
+
+cscope -bkR -i $1

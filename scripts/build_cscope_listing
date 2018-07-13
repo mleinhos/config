@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -x
+
+find . -type f            \
+       -name '*\.[chxsS]' \
+       -o -name '*\.cc'   \
+       -o -name '*\.cpp'  \
+       -o -name '*\.cxx'  \
+       -o -name '*\.c++'  \
+   > cfiles.list
