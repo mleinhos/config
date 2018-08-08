@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+###############################################################################
+## Puts android device into flash mode, flashes it, then boots it and
+## pulls off the kernel log. In the alternate (noflash) mode, just
+## reboots and grabs the log.
+###############################################################################
+
+LOCAL_LOG=/tmp/android_kmsg
+BOOT_TIMEOUT=45
+
+skipflash=false
+flashall=0
+
+args=$(getopt -l "flashall" -o "anh" -- "$@")
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+eval set -- "$args"
+
+while [ $# -ge 1 ]; do
+    case "$1" in
+        --)
+            # No more options left.
+            shift
+            break
+            ;;
+        -a|--flashall)
+            echo "All images will be flashed onto device"
+            flashall=1
+            shift
+            ;;
+        -n)
+            echo "No flashing; will reboot and grab the logs"
+            skipflash=true
+            shift
+            ;;
+        -h)
+            echo "Flash the USB-connected android device"
+            exit 0
+            ;;
+    esac
+    shift
+done
+
+which adb > /dev/null
+if [ $? -ne 0 ]; then
+    echo "Not in ADB environment. Giving up."
+    exit 1
+fi
+
+if [ "$skipflash" = true ]; then
+    echo "Rebooting into normal mode"
+    adb reboot
+    if [ $? -ne 0 ]; then
+        fastboot reboot
+    fi
+else
+    echo "Rebooting device into bootloader"
+    adb reboot bootloader > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "adb failed to reboot device. Assuming it is already in flash mode."
+    fi
+    
+    echo "Flashing"
+    if [ $flashall -ne 0 ]; then
+        echo "Flashing all"
+        fastboot flashall
+    else
+        echo "Flashing boot only"
+        fastboot flash boot
+        fastboot reboot
+    fi
+fi
+
+# Wait for adb to become available
+echo -n "Awaiting device"
+timeout=$BOOT_TIMEOUT
+while [ $timeout -gt 0 ]; do
+    adb root > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    timeout=$((timeout-1))
+    echo -n "."
+    sleep 1
+done
+
+echo "waited $((BOOT_TIMEOUT - timeout)) secs"
+
+if [ $timeout -eq 0 ]; then
+    echo "Device never appeared"
+    exit 1
+fi
+
+# Device is available. Grab the kernel messages; try a couple times
+echo "Pulling /proc/kmsg --> $LOCAL_LOG"
+timeout=5
+while [ $timeout -gt 0 ]; do
+    adb pull /proc/kmsg $LOCAL_LOG > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        exit 0 # all done!
+    fi
+    timeout=$((timeout-1))
+    sleep 1
+done
+
+echo "Timed out waiting to pull file"
+exit 1
