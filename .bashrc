@@ -142,6 +142,52 @@ if ! shopt -oq posix; then
 fi
 
 
+##
+## Path
+##
+for p in /usr/local/lib/xen/bin; do
+    [ -d $p ] && PATH=$PATH:$p
+done
+export PATH
+
+for p in /usr/local/man; do
+    [ -d $p ] && MANPATH=$MANPATH:$p
+done
+export MANPATH
+
+
+##
+## DPMS - monitor power management
+##
+if [ -n $GDMSESSION ]; then
+    xset s 1200 dpms 2400 0 0
+fi
+
+##
+## SPICE / Xen aliases
+##
+alias spice-open-office-linux='remote-viewer spice://localhost:6010 &'
+alias spice-open-office-win7='remote-viewer -t "Office VM" spice://localhost:6070 &'
+alias spice-open-browsing='remote-viewer -t "Browsing VM" spice://localhost:6020 &'
+#alias remote-open-browser='ssh -X matt@browsing.local firefox'
+#alias remote-open-browser='xterm -e "ssh -X matt@browsing.local firefox" &'
+remote-browser() {
+    # TODO: How to minimize the xterm programmatically?
+    xterm -e "ssh -X matt@browsing.local firefox" &
+    disown %+
+}
+remote-boostnote() {
+    ssh -X matt@browsing.local boostnote &
+    disown %+
+}
+
+start-browsing() {
+    sudo xl create $HOME/xen-machines/browsing-linux.hvm
+    sleep 30
+    spice-open-browsing
+    remote-browser
+}
+
 attachproc() {
     gdb /proc/`pidof $1`/exe `pidof $1`
 }
