@@ -2,10 +2,22 @@
 
 ##
 ## http://note.yuhc.me/2017/09/install-xen-on-ubuntu-uefi/
+## See docs/misc/efi.markdown
+##
+## Basically:
+##    configure xen
+##    build it
+##    make install-xen (from container, add docker -v /boot:/boot ...)
+##        or
+##    use the output in dist/install
 ##
 
-set $_name = xen-4.6
-set $_path = "\EFI\xen-4.6\xen-4.6-amd64.efi"
+_name="xen-4.10.1"
+#$_path = "\EFI\xen-4.6\xen-4.6-amd64.efi"
+_path="\EFI\xen-4.10.1\xen-4.10.1.efi"
 
 
-efibootmgr -c -d /dev/nvme0n1 -p 1 -w -L $_name -l $_path
+_disk=/dev/sda
+_part=1
+
+efibootmgr -c -d $_disk -p $_part -w -L $_name -l $_path
