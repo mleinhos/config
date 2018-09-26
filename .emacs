@@ -47,29 +47,13 @@
 ;(setq-default buffer-file-coding-system 'utf-8-dos)
 ;(set-default-coding-systems 'utf-8-dos)
 
-;;
-;; Tab settings: pick one tab-always-indent below
-;;
-(load-file "~/.emacs-tabs.el")
+(load-file "~/.emacs-style.el")
 
 (defun reload-dotemacs ()
   (interactive)
   (load-file "~/.emacs"))
 (global-set-key (kbd "C-c r") 'reload-dotemacs)
 
-; Auto-indent upon newline
-(add-hook 'list-mode-hook '(lambda ()
-   (local-set-key (kbd "RET") 'newline-and-indent)))
-
-; Python-specific stuff
-(setq python-indent 4)
-(add-hook 'python-mode-hook 'guess-style-guess-tabs-mode)
-;(require 'smart-tabs)
-;(require 'guess-style)
-;(smart-tabs-advice python-indent-line-1 python-indent)
-(add-hook 'python-mode-hook (lambda ()
-                              (when indent-tabs-mode
-                                (guess-style-guess-tab-width))))
 
 ; Highlighting
 (global-hl-line-mode 1)
@@ -80,7 +64,7 @@
 ;; https://www.emacswiki.org/emacs/download/fic-mode.el
 (require 'fic-mode)
 (add-hook 'c++-mode-hook 'turn-on-fic-mode) 
-(add-hook 'c-mode-hook 'turn-on-fic-mode) 
+(add-hook 'c-mode-hook   'turn-on-fic-mode) 
 
 ; Display whitespace
 ; Toggle whitespace mdoe with "M-x global-whitespace-mode", or "C-c w"
@@ -99,6 +83,12 @@
 ;(setq ido-enable-flex-matching t)
 ;(setq ido-everywhere t)
 ;(ido-mode t)
+
+(defun create-tags (dir-name)
+     "Create tags file."
+     (interactive "DDirectory: ")
+     (eshell-command 
+      (format "find %s -type f -name \"*.[ch]\" | etags -" dir-name)))
 
 (defun dos2unix ()
   "Convert a DOS formatted text buffer to UNIX format."
@@ -141,45 +131,6 @@
     )
 )
 
-(add-hook 'c-mode-hook
-   '(lambda() 
-        (local-set-key [13] 'c-return)        ;;; RET with automatic indent
-        (local-set-key "\ep" 'indent-all)     ;;; Esc-p pretty-prints file
-        (c-set-style "k&r")                   ;;; Kernihan & Richie's style
-        (setq c-basic-offset 4)               ;;; 4 spaces for indentations
-        (c-set-offset 'substatement-open 0)   ;;; No indent for open bracket
-    )
-)
-;;; c++-mode
-(add-hook 'c++-mode-hook
-   '(lambda() 
-        (local-set-key [13] 'c-return)        ;;; RET with automatic indent
-        (local-set-key "\ep" 'indent-all)     ;;; Esc-p pretty-prints file
-        (c-set-style "Ellemtel")                   ;;; Kernihan & Richie's style
-        (setq c-basic-offset 4)               ;;; 4 spaces for indentations
-        (c-set-offset 'substatement-open 0)   ;;; No indent for open bracket
-        (c-set-offset 'statement-cont 0)      ;;; for earlier emacs 19
-    )
-)
-;;; prolog-mode
-(add-hook 'prolog-mode-hook
-   '(lambda() 
-        (local-set-key [13] 'prolog-return)   ;;; RET with automatic indent
-        (local-set-key "\ep" 'indent-all)     ;;; Esc-p pretty-prints file
-    )
-)
-;;; scheme-mode
-;;; This mode is not entirely to my liking because I prefer to place
-;;; the closing parenthesis on a line of its own, lined up under its
-;;; corresponding closing parenthesis. The modification of this mode
-;;; to support that programming style is on my to-do list.
-(add-hook 'scheme-mode-hook
-   '(lambda() 
-        (local-set-key [13] 'scheme-return)   ;;; RET with automatic indent
-        (local-set-key "\ep" 'indent-all)     ;;; Esc-p pretty-prints file
-        (setq lisp-indent-offset 4)           ;;; 4 spaces for indentation
-    )
-)
 
 ;;
 ;; C development help
