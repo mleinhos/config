@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+#set -x
+
+##
+## Creates snapshot of a logical volume
+##
+
+
+SIZE=20G
+date=$(date +%Y%m%d)
+
+if [ -z $1 ]; then
+   echo "Usage: $(basename $0) /dev/lv_path"
+   echo "Example: $(basename $0) /dev/ubuntu-vg/xen_office_win7x86
+   exit 1
+fi
+
+vg=$(echo $1 | awk -F / '{print $(NF-1)}')
+lv=$(echo $1 | awk -F / '{print $(NF)}')
+
+s="$lv"
+s+="_$date"
+s+="_snap"
+#printf -v s "$lv_$date_snap"
+
+echo "Volume group:   $vg"
+echo "Logical volume: $lv"
+echo "Snapshot name:  $s"
+
+sudo lvcreate -n $s -L $SIZE --snapshot $1
