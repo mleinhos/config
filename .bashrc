@@ -79,7 +79,7 @@ function set_title() {
 }
 
 #echo -e '\033k'$_screentitle'\033\\'
-PROMPT_COMMAND='set_title && export PS1X=$(perl -pl0 -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
+PROMPT_COMMAND='set_title && export PS1X=$(perl -p -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
 #PROMPT_COMMAND='export PS1X=$(perl -pl0 -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
 
 if [ "$color_prompt" = yes ]; then
@@ -159,37 +159,48 @@ export MANPATH
 ##
 ## DPMS - monitor power management
 ##
-if [ -n $GDMSESSION ]; then
+if [ -n "$GDMSESSION" ]; then
     xset s 1200 dpms 2400 0 0
 fi
 
-##
-## SPICE / Xen aliases
-##
-alias spice-open-office-linux='remote-viewer spice://localhost:6010 &'
-alias spice-open-office-win7='remote-viewer -t "Office VM" spice://localhost:6070 &'
-alias spice-open-browsing='remote-viewer -t "Browsing VM" spice://localhost:6020 &'
-#alias remote-open-browser='ssh -X matt@browsing.local firefox'
-#alias remote-open-browser='xterm -e "ssh -X matt@browsing.local firefox" &'
-remote-browser() {
-    # TODO: How to minimize the xterm programmatically?
-    xterm -e "ssh -X matt@browsing.local firefox" &
-    disown %+
-}
-remote-boostnote() {
-    ssh -X matt@browsing.local boostnote &
-    disown %+
-}
-
-start-browsing() {
-    sudo xl create $HOME/xen-machines/browsing-linux.hvm
-    sleep 30
-    spice-open-browsing
-    remote-browser
-}
 
 attachproc() {
     gdb /proc/`pidof $1`/exe `pidof $1`
 }
 
 alias u='source ~/.bashrc'
+#alias spice-open-office-linux='remote-viewer spice://localhost:6010 &'
+alias spice-open-office='remote-viewer -t "Office VM" spice://localhost:6070 &'
+alias spice-open-browsing='remote-viewer -t "Browsing VM" spice://localhost:6020 &'
+
+cycle-audio() {
+    pulseaudio -k
+    pulseaudio --start
+}
+
+#alias remote-open-browser='ssh -X matt@browsing.local firefox'
+remote-browser() {
+    xterm -e "ssh -X matt@browsing.local firefox" &
+    disown %+
+}
+remote-boostnote() {
+    xterm -e "ssh -X matt@browsing.local boostnote" &
+    #ssh -X matt@browsing.local boostnote &
+    disown %+
+}
+#alias remote-open-browser='xterm -e "ssh -X matt@browsing.local firefox" &'
+
+start-browsing() {
+    sudo xl create $HOME/xen-machines/browsing-linux.hvm
+    sleep 10
+    spice-open-browsing
+    sleep 40
+    remote-browser
+}
+
+
+start-office() {
+    sudo xl create $HOME/xen-machines/office-win7.hvm
+    sleep 10
+    spice-open-office
+}
