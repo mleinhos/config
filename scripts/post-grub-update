@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+##
+## Make adjustments after an 'apt upgrade' updates grub, so that my
+## Lenovo laptop can still boot into Ubuntu 18.04. Documented on
+## askubuntu.com, "system installation - Unable to install Ubuntu on
+## Acer Aspire ES1-533"
+##
+##
+## MUST BE RUN AS ROOT. Normally the steps here are followed by a
+## reboot.
+##
+
+
+apt-get install --reinstall grub-efi-amd64
+grub-install --no-nvram
+update-grub
+
+cd /boot/efi/EFI
+cp -R ubuntu/* BOOT/
+cd BOOT
+cp grubx64.efi bootx64.efi
+
+
+
+
