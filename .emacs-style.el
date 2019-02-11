@@ -19,6 +19,13 @@
 ;     )
 ; )
 
+;;
+;; Full path is the buffer name
+;;
+(require 'uniquify)
+;(setq uniquify-buffer-name-style 'reverse)
+;(setq uniquify-buffer-name-style 'forward)
+(setq uniquify-buffer-name-style 'post-forward)
 
 ;;
 ;; Auto-insert closing parens/brackets/etc
@@ -30,7 +37,7 @@
 ;; Default style... clobbered below in case of kernel source
 ;;
 (setq c-default-style "k&r")
-(setq c-basic-offset 4)
+(setq c-basic-offset  4)
 
 (defun maybe-linux-style ()
   (when (and buffer-file-name

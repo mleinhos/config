@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+for _s in xencommons
+do
+	service $_s start
+done
+
+exit 0
