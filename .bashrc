@@ -130,6 +130,12 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+if [ -f ~/.bash_local ]; then
+    . ~/.bash_local
+fi
+
+alias u='source ~/.bashrc'
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -140,7 +146,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-
 
 ##
 ## Path
@@ -155,7 +160,6 @@ for p in /usr/local/man; do
 done
 export MANPATH
 
-
 ##
 ## DPMS - monitor power management
 ##
@@ -163,44 +167,12 @@ if [ -n "$GDMSESSION" ]; then
     xset s 1200 dpms 2400 0 0
 fi
 
-
 attachproc() {
     gdb /proc/`pidof $1`/exe `pidof $1`
 }
-
-alias u='source ~/.bashrc'
-#alias spice-open-office-linux='remote-viewer spice://localhost:6010 &'
-alias spice-open-office='remote-viewer -t "Office VM" spice://localhost:6070 &'
-alias spice-open-browsing='remote-viewer -t "Browsing VM" spice://localhost:6020 &'
 
 cycle-audio() {
     pulseaudio -k
     pulseaudio --start
 }
 
-#alias remote-open-browser='ssh -X matt@browsing.local firefox'
-remote-browser() {
-    xterm -e "ssh -X matt@browsing.local firefox" &
-    disown %+
-}
-remote-boostnote() {
-    xterm -e "ssh -X matt@browsing.local boostnote" &
-    #ssh -X matt@browsing.local boostnote &
-    disown %+
-}
-#alias remote-open-browser='xterm -e "ssh -X matt@browsing.local firefox" &'
-
-start-browsing() {
-    sudo xl create $HOME/xen-machines/browsing-linux.hvm
-    sleep 10
-    spice-open-browsing
-    sleep 40
-    remote-browser
-}
-
-
-start-office() {
-    sudo xl create $HOME/xen-machines/office-win7.hvm
-    sleep 10
-    spice-open-office
-}
