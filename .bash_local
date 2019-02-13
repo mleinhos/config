@@ -36,11 +36,11 @@ start-windev() {
     spice-open-windev
 }
 
-savior_gdbsx_listen() {
+gdbsx_listen() {
     sudo gdbsx -a $1 64 3333
 }
 
-savior_gdb_connect() {
+gdb_connect() {
     gdb -q -ex 'target remote localhost:3333'
 }
 
