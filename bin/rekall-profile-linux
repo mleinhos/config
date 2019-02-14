@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+
+#set -x
+
+##
+## Generates REKALL profile:
+##
+## (1) Copies current directory to target Linux system (a VM), builds
+##     rekall profile, and copies back to host machine.
+## (2) Converts profile to JSON format via rekal virtual env
+##
+##
+## Usage:
+##    rekall-profile-linux
+##        Builds Linux rekall profile per ENV variables
+##    rekall-profile-linux -u
+##        Same as above, but also builds/updates the Python rekall virtual env
+##
+## Notes:
+## -This script doesn't need the rekall repo and needn't be in the repo
+## -virtualenv must be installed on the host
+## -Environment variables used
+##    REKALL_VENV                 where the rekall virtual env is
+##    REKALL_PROFILES             where we store generated rekall profiles
+##    REKALL_TARGET_USER          user on target machine that we utilize
+##    REKALL_TARGET_HOST          target hostname
+##    REKALL_TARGET_PROFILE_NAME  name for the target machine/env
+##    REKALL_LOCAL_DIR            location of local rekall project repo
+##
+
+venv_update=false
+if [ x"$1" == x"-u" ]; then
+    echo "Updating Python virtual env"
+    venv_update=true
+fi
+
+if [ -n $REKALL_VENV ]; then
+    REKALL_VENV=~/venvs/rekall
+    echo "Using default rekall venv: $REKALL_VENV"
+fi
+
+if [ -n $REKALL_PROFILES ]; then
+    REKALL_PROFILES=~/proj/rekall-data
+    echo "Using default rekall profile location: $REKALL_PROFILES"
+fi
+
+# ssh location: cleaner to pull from the environment
+if [ -n $REKALL_TARGET_USER ]; then
+    REKALL_TARGET_USER=ubuntu
+    echo "Using default target username $REKALL_TARGET_USER"
+fi
+
+if [ -n $REKALL_TARGET_HOST ]; then
+    REKALL_TARGET_HOST=ub18-dev-work.local
+    echo "Using default target hostname $REKALL_TARGET_HOST"
+fi
+
+if [ -n $REKALL_TARGET_PROFILE_NAME ]; then
+    REKALL_TARGET_PROFILE_NAME=ubuntu
+    echo "Using default target profile name $REKALL_TARGET_PROFILE_NAME"
+fi
+
+if [ -n $REKALL_LOCAL_DIR ]; then
+    REKALL_LOCAL_DIR=~/proj/rekall
+    echo "Using default local rekall dir $REKALL_LOCAL_DIR"
+fi
+
+REKALL_TARGET=$REKALL_TARGET_USER@$REKALL_TARGET_HOST
+
+REKALL_REMOTE_LOC=rekall
+
+KERNEL=`ssh $REKALL_TARGET uname -r`
+
+JSON_PROFILE=$REKALL_PROFILES/$REKALL_TARGET_PROFILE_NAME-$KERNEL.json
+
+runme() {
+    echo "$*"
+    $*
+}
+
+runme scp -rq $REKALL_LOCAL_DIR/tools/linux $REKALL_TARGET:$REKALL_REMOTE_LOC.tmp
+
+runme ssh -t $REKALL_TARGET \
+    "sudo apt install linux-headers-$KERNEL linux-modules-$KERNEL && \
+     sudo rm -fr $REKALL_REMOTE_LOC                               && \
+     mv $REKALL_REMOTE_LOC.tmp $REKALL_REMOTE_LOC                 && \
+     cd $REKALL_REMOTE_LOC && sudo make profile                   && \
+     sudo zip $KERNEL.zip module_dwarf.ko /boot/System.map-$KERNEL"
+
+runme scp -rq $REKALL_TARGET:$REKALL_REMOTE_LOC/$KERNEL.zip /tmp
+
+mkdir -p $REKALL_VENV
+pushd $REKALL_VENV
+
+cat <<EOF > ./runme.sh
+# Rekall run script
+EOF
+
+if $venv_update; then
+    cat <<EOF >> ./runme.sh
+echo Installing rekall
+pip install future==0.16.0 rekall
+EOF
+fi
+
+cat <<EOF >> ./runme.sh
+echo Generating $JSON_PROFILE
+rekal.py convert_profile /tmp/$KERNEL.zip $JSON_PROFILE
+echo Done generating $JSON_PROFILE
+EOF
+
+chmod +x ./runme.sh
+
+if $venv_update; then
+    virtualenv -p python3 $REKALL_VENV
+fi
+
+source bin/activate
+./runme.sh
+deactivate
+
+popd
