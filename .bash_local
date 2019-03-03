@@ -1,10 +1,11 @@
 ##
-## Local system settings, use this as a template
+## System-specific commands, etc
 ##
 
-alias spice-open-office='remote-viewer -t "Office VM" spice://localhost:6070 &'
-alias spice-open-browsing='remote-viewer -t "Browsing VM" spice://localhost:6020 &'
-alias spice-open-windev='remote-viewer -t "Win Development VM" spice://localhost:6080 &'
+alias spice-open-browsing='open_remote_viewer "Browsing VM" 6020'
+alias spice-open-office='open_remote_viewer "Office VM x64" 6071'
+alias spice-open-windev='open_remote_viewer "Windows 7 dev VM" 6080'
+
 
 remote-browser() {
     xterm -e "ssh -X matt@browsing.local firefox" &
@@ -25,7 +26,7 @@ start-browsing() {
 }
 
 start-office() {
-    sudo xl create $HOME/xen-vms/office-win7.hvm
+    sudo xl create $HOME/xen-vms/office-win7x64.hvm
     sleep 10
     spice-open-office
 }

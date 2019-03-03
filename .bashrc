@@ -80,7 +80,6 @@ function set_title() {
 
 #echo -e '\033k'$_screentitle'\033\\'
 PROMPT_COMMAND='set_title && export PS1X=$(perl -p -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
-#PROMPT_COMMAND='export PS1X=$(perl -pl0 -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
 
 if [ "$color_prompt" = yes ]; then
     #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
@@ -130,12 +129,6 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-if [ -f ~/.bash_local ]; then
-    . ~/.bash_local
-fi
-
-alias u='source ~/.bashrc'
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -146,6 +139,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
 
 ##
 ## Path
@@ -160,12 +154,19 @@ for p in /usr/local/man; do
 done
 export MANPATH
 
+
 ##
 ## DPMS - monitor power management
 ##
 if [ -n "$GDMSESSION" ]; then
     xset s 1200 dpms 2400 0 0
 fi
+
+# Customize idle timeout, not restricted to fixed GUI vals
+# https://askubuntu.com/questions/1042641/how-to-set-custom-lock-screen-time-in-ubuntu-18-04
+set-idle-timeout-mins() {
+    gsettings set org.gnome.desktop.session idle-delay $((60*$1))
+}
 
 attachproc() {
     gdb /proc/`pidof $1`/exe `pidof $1`
@@ -176,3 +177,15 @@ cycle-audio() {
     pulseaudio --start
 }
 
+# Args: pretty-name, spice-port
+open_remote_viewer() {
+    outfile=/tmp/spice.$2.log
+    echo Starting remote-viewer, log file $outfile
+    remote-viewer -t "$1" spice://localhost:$2 > $outfile 2>&1 &
+}
+
+alias u='source ~/.bashrc'
+
+if [ -f ~/.bash_local]; then
+    source ~/.bash_local
+fi
