@@ -186,6 +186,6 @@ open_remote_viewer() {
 
 alias u='source ~/.bashrc'
 
-if [ -f ~/.bash_local]; then
+if [ -f ~/.bash_local ]; then
     source ~/.bash_local
 fi
