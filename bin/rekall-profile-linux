@@ -34,33 +34,33 @@ if [ x"$1" == x"-u" ]; then
     venv_update=true
 fi
 
-if [ -n $REKALL_VENV ]; then
+if [ -z $REKALL_VENV ]; then
     REKALL_VENV=~/venvs/rekall
     echo "Using default rekall venv: $REKALL_VENV"
 fi
 
-if [ -n $REKALL_PROFILES ]; then
+if [ -z $REKALL_PROFILES ]; then
     REKALL_PROFILES=~/proj/rekall-data
     echo "Using default rekall profile location: $REKALL_PROFILES"
 fi
 
 # ssh location: cleaner to pull from the environment
-if [ -n $REKALL_TARGET_USER ]; then
+if [ -z $REKALL_TARGET_USER ]; then
     REKALL_TARGET_USER=ubuntu
     echo "Using default target username $REKALL_TARGET_USER"
 fi
 
-if [ -n $REKALL_TARGET_HOST ]; then
+if [ -z $REKALL_TARGET_HOST ]; then
     REKALL_TARGET_HOST=ub18-dev-work.local
     echo "Using default target hostname $REKALL_TARGET_HOST"
 fi
 
-if [ -n $REKALL_TARGET_PROFILE_NAME ]; then
+if [ -z $REKALL_TARGET_PROFILE_NAME ]; then
     REKALL_TARGET_PROFILE_NAME=ubuntu
     echo "Using default target profile name $REKALL_TARGET_PROFILE_NAME"
 fi
 
-if [ -n $REKALL_LOCAL_DIR ]; then
+if [ -z $REKALL_LOCAL_DIR ]; then
     REKALL_LOCAL_DIR=~/proj/rekall
     echo "Using default local rekall dir $REKALL_LOCAL_DIR"
 fi
@@ -115,7 +115,7 @@ if $venv_update; then
     virtualenv -p python3 $REKALL_VENV
 fi
 
-source bin/activate
+source $REKALL_VENV/bin/activate
 ./runme.sh
 deactivate
 
