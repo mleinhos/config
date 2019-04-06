@@ -20,16 +20,16 @@ end
 ##
 
 #################################################
-## Drawbridge support
+## Project1 support
 #################################################
 #set architecture i386
-#set substitute-path /home/sluser/drawbridge-build /tmp/drawbridge-build
+#set substitute-path /home/sluser/project1-build /tmp/project1-build
 
 # We can't use this with gdb now. It would make things easier...
-#set $_targetko="/tmp/drawbridge-build/control-module/drawbridge.ko"
+#set $_targetko="/tmp/project1-build/control-module/project1.ko"
 
 #define rmsym
-#  remove-symbol-file /tmp/drawbridge-build/control-module/drawbridge.ko
+#  remove-symbol-file /tmp/project1-build/control-module/project1.ko
 #end
 
 #define addsym
@@ -38,26 +38,26 @@ end
 #  else
 #    set $_bss = 0
 #  end
-#  add-symbol-file /tmp/drawbridge-build/control-module/drawbridge.ko $arg0 -s .bss $_bss
+#  add-symbol-file /tmp/project1-build/control-module/project1.ko $arg0 -s .bss $_bss
 #end
 
 #document addsym
 #  Syntax: addsym <@text> <@bss>
-#  | adds symbol file for Drawbridge driver
+#  | adds symbol file for Project1 driver
 #end
 ###############################################
 
 
 
 #################################################
-## Magic Wand support
+## Project2 support
 #################################################
 
 set architecture i386:x86-64
-set substitute-path /home/sluser/protvm /tmp/mwpvm/protvm
+set substitute-path /home/sluser/d1 /tmp/a/d1
 
 define rmsym
-  remove-symbol-file /tmp/mwpvm/protvm/kernel/mwcomms/mwcomms.ko
+  remove-symbol-file /tmp/a/d1/path.ko
 end
 
 define addsym
@@ -66,12 +66,12 @@ define addsym
   else
     set $_bss = 0
   end
-  add-symbol-file /tmp/mwpvm/protvm/kernel/mwcomms/mwcomms.ko $arg0 -s .bss $_bss
+  add-symbol-file /tmp/a/d1/path.ko $arg0 -s .bss $_bss
 end
 
 document addsym
   Syntax: addsym <@text> [<@bss>]
-  | adds symbol file for MagicWand PVM driver
+  | adds symbol file for Project2 driver
 end
 
 
