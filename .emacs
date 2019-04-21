@@ -2,6 +2,13 @@
 ;; See cedet/common/cedet.info for configuration details.
 ;; IMPORTANT: Tou must place this *before* any CEDET component
 ;; gets activated by another package (Gnus, auth-source, ...).
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (load-file "~/.devtools/cedet-repo/cedet-devel-load.el")
 
 ;; Put extra modules in this directory
@@ -60,6 +67,11 @@
 (set-face-background 'hl-line "DarkRed")
 ;(set-face-background 'hl-line "DarkBlue")
 ;(set-face-background 'hl-line "DarkOliveGreen")
+
+;; Zoom in/out: use C-x C-- and C-x C-+
+;(global-set-key [C-mouse-wheel-up-event]  'text-scale-increase)
+;(global-set-key  [C-mouse-wheel-down-event] 'text-scale-decrease)
+;(global-set-key  (kbd "C-u --") 'text-scale-decrease)
 
 ;; https://www.emacswiki.org/emacs/download/fic-mode.el
 (require 'fic-mode)
@@ -150,8 +162,9 @@
 (add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)  
 (add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)  
 (add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)  
-(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)  
 (add-to-list 'semantic-default-submodes 'global-semantic-highlight-func-mode)  
+;; Causes no buffer to appear!
+;;;(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode) 
 
 
 ;(global-semantic-idle-scheduler-mode)

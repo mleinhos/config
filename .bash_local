@@ -1,0 +1,54 @@
+##
+## System-specific commands, etc
+##
+
+alias spice-open-browsing='open_remote_viewer "Browsing VM" 6020'
+alias spice-open-office='open_remote_viewer "Office VM x64" 6071'
+alias spice-open-windev='open_remote_viewer "Windows 7 dev VM" 6080'
+
+
+remote-browser() {
+    xterm -e "ssh -X matt@browsing.local firefox" &
+    disown %+
+}
+
+remote-boostnote() {
+    xterm -e "ssh -X matt@browsing.local boostnote" &
+    disown %+
+}
+
+start-browsing() {
+    sudo xl create $HOME/xen-vms/browsing-linux.hvm
+    sleep 10
+    spice-open-browsing
+    sleep 40
+    remote-browser
+}
+
+start-office() {
+    sudo xl create $HOME/xen-vms/office-win7x64.hvm
+    sleep 10
+    spice-open-office
+}
+
+start-windev() {
+    sudo xl create $HOME/xen-vms/windev7.hvm
+    sleep 5
+    spice-open-windev
+}
+
+gdbsx_listen() {
+    sudo gdbsx -a $1 64 3333
+}
+
+gdb_connect() {
+    gdb -q -ex 'target remote localhost:3333'
+}
+
+android_screenshot() {
+    adb shell screencap -p /sdcard/screenshot.png
+    adb pull /sdcard/screenshot.png /tmp/screenshot.png
+    xdg-open /tmp/screenshot.png
+}
+
+alias android_get_kmsg='adb pull /proc/kmsg .'

@@ -80,7 +80,6 @@ function set_title() {
 
 #echo -e '\033k'$_screentitle'\033\\'
 PROMPT_COMMAND='set_title && export PS1X=$(perl -p -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
-#PROMPT_COMMAND='export PS1X=$(perl -pl0 -e "s|^${HOME}|~|;s|([^/])[^/]*/|$""1/|g" <<<${PWD})'
 
 if [ "$color_prompt" = yes ]; then
     #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
@@ -163,44 +162,30 @@ if [ -n "$GDMSESSION" ]; then
     xset s 1200 dpms 2400 0 0
 fi
 
+# Customize idle timeout, not restricted to fixed GUI vals
+# https://askubuntu.com/questions/1042641/how-to-set-custom-lock-screen-time-in-ubuntu-18-04
+set-idle-timeout-mins() {
+    gsettings set org.gnome.desktop.session idle-delay $((60*$1))
+}
 
 attachproc() {
     gdb /proc/`pidof $1`/exe `pidof $1`
 }
-
-alias u='source ~/.bashrc'
-#alias spice-open-office-linux='remote-viewer spice://localhost:6010 &'
-alias spice-open-office='remote-viewer -t "Office VM" spice://localhost:6070 &'
-alias spice-open-browsing='remote-viewer -t "Browsing VM" spice://localhost:6020 &'
 
 cycle-audio() {
     pulseaudio -k
     pulseaudio --start
 }
 
-#alias remote-open-browser='ssh -X matt@browsing.local firefox'
-remote-browser() {
-    xterm -e "ssh -X matt@browsing.local firefox" &
-    disown %+
-}
-remote-boostnote() {
-    xterm -e "ssh -X matt@browsing.local boostnote" &
-    #ssh -X matt@browsing.local boostnote &
-    disown %+
-}
-#alias remote-open-browser='xterm -e "ssh -X matt@browsing.local firefox" &'
-
-start-browsing() {
-    sudo xl create $HOME/xen-machines/browsing-linux.hvm
-    sleep 10
-    spice-open-browsing
-    sleep 40
-    remote-browser
+# Args: pretty-name, spice-port
+open_remote_viewer() {
+    outfile=/tmp/spice.$2.log
+    echo Starting remote-viewer, log file $outfile
+    remote-viewer -t "$1" spice://localhost:$2 > $outfile 2>&1 &
 }
 
+alias u='source ~/.bashrc'
 
-start-office() {
-    sudo xl create $HOME/xen-machines/office-win7.hvm
-    sleep 10
-    spice-open-office
-}
+if [ -f ~/.bash_local ]; then
+    source ~/.bash_local
+fi

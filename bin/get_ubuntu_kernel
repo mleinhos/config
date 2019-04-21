@@ -1,0 +1,56 @@
+#!/bin/bash
+
+##
+## Fetches the requested Linux kernel packages, puts them in
+## ~/kernels/<version>.
+##
+## Example usage: get_ubuntu_kernel 04.20.7
+##
+
+arch=amd64
+
+base_url="https://kernel.ubuntu.com/~kernel-ppa/mainline"
+
+dot_version=$1
+
+# chop the version into its parts, removing prepended zeros since they
+# should all be interpreted as base 10
+kver=$(echo $dot_version | cut -d . -f 1 | sed -e 's/^[0+]/0/g' )
+kmaj=$(echo $dot_version | cut -d . -f 2 | sed -e 's/^[0+]/0/g' )
+kmin=$(echo $dot_version | cut -d . -f 3 | sed -e 's/^[0+]/0/g' )
+
+num_version=$(printf "%02d%02d%02d" $kver $kmaj $kmin)
+full_dot=$(printf "%02d.%02d.%02d" $kver $kmaj $kmin)
+abbrev_dot=$(printf %d.%d.%d $kver $kmaj $kmin)
+url=$base_url/v$abbrev_dot
+target_dir=~/kernels/ubuntu-kernel-$num_version
+
+echo dot $dot_version
+echo num $num_version
+echo abbrev $abbrev_dot
+echo full $full_dot
+echo URL: $url
+echo "Target directory: $target_dir"
+mkdir -p $target_dir
+
+listing=/tmp/listing-$num_version
+
+# Get a listing of the build files in a friendly format
+curl -o $listing $url/README
+
+# Download what we need
+for line in $(cat $listing | sort -u); do
+    if [[ $line == linux-headers*generic*$arch*deb  ]] ||
+       [[ $line == linux-headers*_all.deb           ]] ||
+       [[ $line == linux-image*generic*_$arch.deb   ]] ||
+       [[ $line == linux-modules*generic*_$arch.deb ]]
+    then
+	deb_url="$url/$line"
+	local_file=$target_dir/$line
+	echo "Fetching $deb_url --> $local_file"
+	curl -o $local_file $deb_url
+    fi
+done
+
+# Cleanup
+rm -f $listing
