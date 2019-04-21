@@ -1,0 +1,10 @@
+#!/bin/bash
+
+##
+## Build tags for vim, etc (not emacs)
+
+
+find $*              \
+     -type f         \
+     -name '*.c' -o -name '*.h' -name '*.S' \
+     | ctags -

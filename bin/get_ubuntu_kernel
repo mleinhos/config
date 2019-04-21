@@ -15,9 +15,9 @@ dot_version=$1
 
 # chop the version into its parts, removing prepended zeros since they
 # should all be interpreted as base 10
-kver=$(echo $dot_version | cut -d . -f 1 | sed -e 's/^0//g' )
-kmaj=$(echo $dot_version | cut -d . -f 2 | sed -e 's/^0//g' )
-kmin=$(echo $dot_version | cut -d . -f 3 | sed -e 's/^0//g' )
+kver=$(echo $dot_version | cut -d . -f 1 | sed -e 's/^[0+]/0/g' )
+kmaj=$(echo $dot_version | cut -d . -f 2 | sed -e 's/^[0+]/0/g' )
+kmin=$(echo $dot_version | cut -d . -f 3 | sed -e 's/^[0+]/0/g' )
 
 num_version=$(printf "%02d%02d%02d" $kver $kmaj $kmin)
 full_dot=$(printf "%02d.%02d.%02d" $kver $kmaj $kmin)

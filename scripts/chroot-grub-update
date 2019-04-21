@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+##
+## Fixes bad grub update. Run as root.
+## Assumes root filesystem is mounted in /tmp/mnt
+##
+
+_root=/tmp/mnt
+
+for p in dev proc run sys sys/kernel/config
+do
+    mkdir -p $_root/$p
+    mount --bind /$p $_root/$p
+done
+
+chroot $_root
+
+## These things need to be run after the chroot but them may not be...
+
+mount /boot/efi
+
+./post-grub-update
+

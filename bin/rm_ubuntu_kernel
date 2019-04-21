@@ -1,0 +1,35 @@
+#!/bin/bash
+
+##
+## Removes the requested Linux kernel packages.
+##
+## Example usage: rm_ubuntu_kernel 04.20.10
+## This will remove:
+##    linux-headers-4.20.10-042010
+##    linux-headers-4.20.10-042010-generic
+##    linux-image-unsigned-4.20.10-042010-generic
+##    linux-modules-4.20.10-042010-generic
+##
+
+arch=amd64
+
+dot_version=$1
+
+# chop the version into its parts, removing prepended zeros since they
+# should all be interpreted as base 10
+kver=$(echo $dot_version | cut -d . -f 1 | sed -e 's/^[0+]/0/g' )
+kmaj=$(echo $dot_version | cut -d . -f 2 | sed -e 's/^[0+]/0/g' )
+kmin=$(echo $dot_version | cut -d . -f 3 | sed -e 's/^[0+]/0/g' )
+
+num_version=$(printf "%02d%02d%02d" $kver $kmaj $kmin)
+full_dot=$(printf "%02d.%02d.%02d" $kver $kmaj $kmin)
+abbrev_dot=$(printf %d.%d.%d $kver $kmaj $kmin)
+
+echo dot $dot_version
+echo num $num_version
+echo abbrev $abbrev_dot
+echo full $full_dot
+
+pkg_ver="$abbrev_dot-$num_version"
+
+sudo apt remove linux-headers-$pkg_ver linux-headers-$pkg_ver-generic linux-image-unsigned-$pkg_ver-generic linux-modules-$pkg_ver-generic
