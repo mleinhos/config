@@ -36,33 +36,33 @@ fi
 
 if [ -z $REKALL_VENV ]; then
     REKALL_VENV=~/venvs/rekall
-    echo "Using default rekall venv: $REKALL_VENV"
+    echo "Using default rekall venv (REKALL_VENV): $REKALL_VENV"
 fi
 
 if [ -z $REKALL_PROFILES ]; then
     REKALL_PROFILES=~/proj/rekall-data
-    echo "Using default rekall profile location: $REKALL_PROFILES"
+    echo "Using default rekall profile location (REKALL_PROFILES): $REKALL_PROFILES"
 fi
 
 # ssh location: cleaner to pull from the environment
 if [ -z $REKALL_TARGET_USER ]; then
     REKALL_TARGET_USER=ubuntu
-    echo "Using default target username $REKALL_TARGET_USER"
+    echo "Using default target username (REKALL_TARGET_USER): $REKALL_TARGET_USER"
 fi
 
 if [ -z $REKALL_TARGET_HOST ]; then
     REKALL_TARGET_HOST=ub18-dev-work.local
-    echo "Using default target hostname $REKALL_TARGET_HOST"
+    echo "Using default target hostname (REKALL_TARGET_HOST): $REKALL_TARGET_HOST"
 fi
 
 if [ -z $REKALL_TARGET_PROFILE_NAME ]; then
     REKALL_TARGET_PROFILE_NAME=ubuntu
-    echo "Using default target profile name $REKALL_TARGET_PROFILE_NAME"
+    echo "Using default target profile name (REKALL_TARGET_PROFILE_NAME): $REKALL_TARGET_PROFILE_NAME"
 fi
 
 if [ -z $REKALL_LOCAL_DIR ]; then
     REKALL_LOCAL_DIR=~/proj/rekall
-    echo "Using default local rekall dir $REKALL_LOCAL_DIR"
+    echo "Using default local rekall dir (REKALL_LOCAL_DIR): $REKALL_LOCAL_DIR"
 fi
 
 REKALL_TARGET=$REKALL_TARGET_USER@$REKALL_TARGET_HOST
