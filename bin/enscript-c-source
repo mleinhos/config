@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+_ofile=$1.pdf
+echo Enscript output: $_ofile
+enscript -2 -r --mark-wrapped-lines=arrow --line-numbers --font=Courier8 --highlight=c -o $_ofile $1
