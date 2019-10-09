@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+#set -x
+
+##
+## Commits a snapshot of a logical volume back into the origin.
+##
+## Sample usage:
+##    ./lv-commit-snap /dev/store/ubuntu-image-snap-experimental-feature
+##
+
+
+if [ -z $1 ]; then
+   echo "Usage: $(basename $0) <lv_path>"
+   echo "Example: $(basename $0) /dev/store/ubuntu-image-snap-experimental-feature"
+   exit 1
+fi
+
+s=$(echo $1 | awk -F / '{print $(NF)}')
+
+echo "Snapshot name:  $s"
+
+echo "Do you wish to merge snapshot $s into its origin? Enter # below."
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) break;;
+        No  ) exit 2;;
+        * ) echo "You entered $yn. Enter Y or N";;
+    esac
+done
+
+sudo lvconvert --merge $s
+
