@@ -7,6 +7,8 @@
 ##
 ## Environmental inputs:
 ##   CLEAN: if true, make clean first
+##   INSTALL_DEPS: if true, install dependencies on 
+##            system first (including those for make menuconfig)
 ##
 ## See https://www.maketecheasier.com/build-custom-kernel-ubuntu
 ##
@@ -34,7 +36,8 @@ export BUILDDIR=$VERSION$LOCALVERSION
 
 #threads=`grep 'model name' /proc/cpuinfo | wc -l`
 #threads=$((`nproc`-1))
-threads=`nproc --ignore=2`
+threads=`nproc --ignore=0`
+#threads=`nproc --ignore=2`
 export CONCURRENCY_LEVEL=$threads
 
 build_check() {
@@ -52,6 +55,14 @@ cd $SOURCE
 echo *** Read comments in this script before running! ***
 echo Building kernel version $VERSION
 
+
+if [ -n "$INSTALL_DEPS" ]; then 
+    echo Installing dependencies...
+    build_check apt install git build-essential kernel-package \
+           fakeroot libncurses5-dev libssl-dev ccache flex bison
+fi
+
+
 # FIXME: recent kernels have moved a file; the build system can't find
 # it so we link to the old location
 # ---------------
@@ -62,6 +73,7 @@ echo Building kernel version $VERSION
 
 if [ -n "$CLEAN" ]; then 
     echo Cleaning...
+    build_check make distclean
     build_check make-kpkg clean
 fi
 

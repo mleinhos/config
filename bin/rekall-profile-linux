@@ -80,8 +80,9 @@ runme() {
 
 runme scp -rq $REKALL_LOCAL_DIR/tools/linux $REKALL_TARGET:$REKALL_REMOTE_LOC.tmp
 
+#"sudo apt install build-essential zip linux-headers-$KERNEL linux-modules-$KERNEL && \
 runme ssh -t $REKALL_TARGET \
-    "sudo apt install build-essential zip linux-headers-$KERNEL linux-modules-$KERNEL && \
+    "sudo apt install build-essential zip && \
      sudo rm -fr $REKALL_REMOTE_LOC                               && \
      mv $REKALL_REMOTE_LOC.tmp $REKALL_REMOTE_LOC                 && \
      cd $REKALL_REMOTE_LOC && sudo make profile                   && \
