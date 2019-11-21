@@ -1,0 +1,6 @@
+#!/bin/bash
+
+build_kernel_file_listing .
+
+echo "Building tags file"
+ctags --declarations --globals `cat source.files`

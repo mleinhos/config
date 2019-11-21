@@ -1,6 +1,9 @@
 #!/bin/bash
 
+OUTFILE=./source.files
 LNX=.
+
+echo "Building $OUTFILE from source/header files in $LNX"
 
 find $LNX -type f \
 	-path "$LNX/arch/*" ! -path "$LNX/arch/i386*" -prune -o               \
@@ -8,9 +11,4 @@ find $LNX -type f \
 	-path "$LNX/tmp*" -prune -o                                           \
 	-path "$LNX/Documentation*" -prune -o                                 \
 	-path "$LNX/scripts*" -prune -o                                       \
-        -name "*.[chxsS]" -print > source.files
-
-#	-path "$LNX/drivers*" -prune -o
-
-#cscope -b -k -R -isource.files
-ctags --declarations --globals `cat source.files`
+        -name "*.[chxsS]" -print > $OUTFILE
